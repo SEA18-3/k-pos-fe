@@ -19,8 +19,7 @@ export const Cart: React.FC<CartProps> = ({
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
-  const tax = subtotal * 0.08;
-  const total = subtotal + tax;
+  const total = subtotal;
 
   return (
     <div className="w-[535px] h-full flex flex-col justify-between bg-white flex-shrink-0 select-none">
@@ -103,22 +102,9 @@ export const Cart: React.FC<CartProps> = ({
 
       {/* Checkout Block Section */}
       <div className="border-t border-gray-200 bg-white p-6 flex flex-col gap-5 flex-shrink-0 shadow-[0_-4px_20px_rgba(0,0,0,0.02)]">
-        {/* Subtotal & Tax Breakdown (Unobtrusive & Elegant) */}
-        {cart.length > 0 && (
-          <div className="flex flex-col gap-1 text-xs text-gray-500 font-medium px-1 border-b border-dashed border-gray-100 pb-3">
-            <div className="flex justify-between">
-              <span>Subtotal</span>
-              <span className="font-semibold text-gray-700">${subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between">
-              <span>Sales Tax (8%)</span>
-              <span className="font-semibold text-gray-700">${tax.toFixed(2)}</span>
-            </div>
-          </div>
-        )}
 
         {/* Total Price Row */}
-        <div className="flex items-end justify-between px-1 h-14">
+        <div className="flex items-end justify-between px-1">
           <span className="font-black text-gray-900 text-3xl tracking-wider select-none leading-none m-0">TOTAL</span>
           <span className="font-black text-brand-blue text-3xl select-none leading-none m-0">
             ${total.toFixed(2)}

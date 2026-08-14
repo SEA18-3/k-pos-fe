@@ -22,8 +22,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
     (sum, item) => sum + item.product.price * item.quantity,
     0
   );
-  const tax = subtotal * 0.08;
-  const total = subtotal + tax;
+  const total = subtotal;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 select-none">
@@ -95,14 +94,6 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
 
           {/* Calculations Breakdown */}
           <div className="border-t border-gray-150 pt-3 flex flex-col gap-2 text-xs">
-            <div className="flex justify-between text-gray-500 font-medium">
-              <span>Subtotal</span>
-              <span>${subtotal.toFixed(2)}</span>
-            </div>
-            <div className="flex justify-between text-gray-500 font-medium">
-              <span>Sales Tax (8%)</span>
-              <span>${tax.toFixed(2)}</span>
-            </div>
             <div className="flex justify-between items-center text-sm font-black text-gray-900 border-t border-dashed border-gray-200 pt-2.5 mt-1">
               <span className="tracking-wide">TOTAL PAID</span>
               <span className="text-lg text-emerald-600">${total.toFixed(2)}</span>
