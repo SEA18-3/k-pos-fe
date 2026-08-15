@@ -2,6 +2,8 @@ import { Navigate, Route, Routes } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import { Login } from './pages/Login';
 import { TransactionPage } from './pages/TransactionPage';
+import { HistoryPage } from './pages/HistoryPage';
+import { TransactionDetailPage } from './pages/TransactionDetailPage';
 import { useAuthStore } from './store/auth';
 import { useNetworkListener } from './store/connection';
 
@@ -35,6 +37,22 @@ function App() {
         element={
           <RequireAuth>
             <TransactionPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/history"
+        element={
+          <RequireAuth>
+            <HistoryPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/history/:transactionId"
+        element={
+          <RequireAuth>
+            <TransactionDetailPage />
           </RequireAuth>
         }
       />

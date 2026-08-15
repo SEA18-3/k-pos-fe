@@ -5,30 +5,29 @@ import { Cart } from '../components/Cart';
 import { SuccessModal } from '../components/SuccessModal';
 import { PRODUCTS } from '../store/items';
 import { useCartStore } from '../store/cart';
+import { useTransactionStore } from '../store/transactions';
+import type { Transaction } from '../types';
 
 export const TransactionPage = () => {
   const items = useCartStore((state) => state.items);
   const addItem = useCartStore((state) => state.addItem);
   const updateQuantity = useCartStore((state) => state.updateQuantity);
   const clearCart = useCartStore((state) => state.clearCart);
+  const createTransaction = useTransactionStore((state) => state.createTransaction);
   const [searchQuery, setSearchQuery] = useState('');
-  const [isCheckoutSuccess, setIsCheckoutSuccess] = useState(false);
-  const [invoiceNumber, setInvoiceNumber] = useState('');
-  const [dateStr, setDateStr] = useState('');
+  const [activeTransaction, setActiveTransaction] = useState<Transaction | null>(null);
 
-  // Complete checkout process and show Success Modal
+  // Complete checkout process, create a real transaction, then show Success Modal
   const handleCheckout = () => {
     if (items.length > 0) {
-      setInvoiceNumber(`INV-${Math.floor(100000 + Math.random() * 900000)}`);
-      setDateStr(new Date().toLocaleString());
-      setIsCheckoutSuccess(true);
+      setActiveTransaction(createTransaction(items));
+      clearCart();
     }
   };
 
-  // Close success modal and reset cart to start a new transaction
+  // Close success modal and reset active transaction
   const handleCloseModal = () => {
-    setIsCheckoutSuccess(false);
-    clearCart();
+    setActiveTransaction(null);
   };
 
   return (
@@ -57,10 +56,7 @@ export const TransactionPage = () => {
 
       {/* Success checkout popup */}
       <SuccessModal
-        isOpen={isCheckoutSuccess}
-        cart={items}
-        invoiceNumber={invoiceNumber}
-        dateStr={dateStr}
+        transaction={activeTransaction}
         onClose={handleCloseModal}
       />
     </div>

@@ -1,5 +1,6 @@
 import React from 'react';
 import type { CartItem } from '../types';
+import { formatIDR } from '../utils/format';
 
 interface CartProps {
   cart: CartItem[];
@@ -73,7 +74,7 @@ export const Cart: React.FC<CartProps> = ({
 
                 {/* Total Price */}
                 <div className="text-right font-black text-gray-900 text-sm">
-                  ${(item.product.price * item.quantity).toFixed(2)}
+                  {formatIDR(item.product.price * item.quantity)}
                 </div>
               </div>
             ))
@@ -107,7 +108,7 @@ export const Cart: React.FC<CartProps> = ({
         <div className="flex items-end justify-between px-1">
           <span className="font-black text-gray-900 text-3xl tracking-wider select-none leading-none m-0">TOTAL</span>
           <span className="font-black text-brand-blue text-3xl select-none leading-none m-0">
-            ${total.toFixed(2)}
+            {formatIDR(total)}
           </span>
         </div>
 

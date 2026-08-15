@@ -1,4 +1,5 @@
 import React, { useState } from 'react';
+import { Link } from 'react-router-dom';
 import { Menu, X, ShoppingCart, History, BarChart3 } from 'lucide-react';
 import { ConnectionStatus } from './ConnectionStatus';
 
@@ -58,26 +59,26 @@ export const Header: React.FC = () => {
 
         {/* Navigation Menu */}
         <nav className="flex-1 py-4 px-3 space-y-1">
-          <a 
-            href="#transaction" 
+          <Link
+            to="/"
             onClick={() => setIsNavOpen(false)}
             className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-white/10 active:bg-white/20 transition-colors font-medium"
           >
             <ShoppingCart className="w-5 h-5" />
             <span>Transaction</span>
-          </a>
+          </Link>
 
-          <a 
-            href="#history" 
+          <Link
+            to="/history"
             onClick={() => setIsNavOpen(false)}
             className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-white/10 active:bg-white/20 transition-colors font-medium"
           >
             <History className="w-5 h-5" />
             <span>History</span>
-          </a>
+          </Link>
 
-          <a 
-            href="#reports" 
+          <a
+            href="#reports"
             onClick={() => setIsNavOpen(false)}
             className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-white/10 active:bg-white/20 transition-colors font-medium"
           >
