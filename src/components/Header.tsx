@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { Menu, X, ShoppingCart, History, BarChart3 } from 'lucide-react';
+import { ConnectionStatus } from './ConnectionStatus';
 
 export const Header: React.FC = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
@@ -23,6 +24,9 @@ export const Header: React.FC = () => {
 
         {/* Brand Title */}
         <h1 className="text-2xl font-bold tracking-[0.1em] text-white m-0">K-POS</h1>
+
+        {/* Connection Status Indicator */}
+        <ConnectionStatus />
       </header>
 
       {/* Backdrop */}

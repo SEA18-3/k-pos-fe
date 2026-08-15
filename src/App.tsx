@@ -3,6 +3,7 @@ import type { ReactElement } from 'react';
 import { Login } from './pages/Login';
 import { TransactionPage } from './pages/TransactionPage';
 import { useAuthStore } from './store/auth';
+import { useNetworkListener } from './store/connection';
 
 interface RequireAuthProps {
   children: ReactElement;
@@ -20,6 +21,8 @@ const RequireAuth: React.FC<RequireAuthProps> = ({ children }) => {
 
 function App() {
   const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+
+  useNetworkListener();
 
   return (
     <Routes>

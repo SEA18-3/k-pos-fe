@@ -8,7 +8,9 @@ lerna-debug.log*
 
 graphify-out/
 .claude/
+AGENTS.md
 CLAUDE.md
+dist/
 
 # Diagnostic reports (https://nodejs.org/api/report.html)
 report.[0-9]*.[0-9]*.[0-9]*.[0-9]*.json
