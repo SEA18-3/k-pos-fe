@@ -1,4 +1,11 @@
 import { create } from 'zustand';
+import {
+  registerOwner,
+  type RegisterOwnerRequest,
+  type RegisterOwnerResult,
+} from '../api/auth';
+
+export type { RegisterOwnerRequest, RegisterOwnerResult } from '../api/auth';
 
 export type UserRole = 'ADMIN' | 'OWNER' | 'OPERATOR' | 'ENTRY';
 
@@ -11,23 +18,13 @@ export const DEMO_CREDENTIALS = {
 };
 
 // Mock OWNER — development/testing hanya. Bukan hasil dari /register (register
-// selalu gagal sampai backend tersedia), jadi role OWNER hanya berasal dari akun
-// mock ini untuk keperluan uji coba role-based UI.
+// nyata membuat user baru di backend); akun ini hanya untuk uji coba role-based UI.
 export const MOCK_OWNER = {
   email: 'owner@k-pos.com',
   password: 'owner123',
   name: 'Owner Demo',
   role: 'OWNER' as UserRole,
 };
-
-export interface RegisterOwnerRequest {
-  name: string;
-  email: string;
-  password: string;
-  merchantName: string;
-}
-
-export type RegisterOwnerResult = { ok: true } | { ok: false; error: string };
 
 export interface AuthUser {
   name: string;
@@ -39,7 +36,7 @@ interface AuthState {
   isAuthenticated: boolean;
   user: AuthUser | null;
   login: (email: string, password: string) => boolean;
-  register: (request: RegisterOwnerRequest) => RegisterOwnerResult;
+  register: (request: RegisterOwnerRequest) => Promise<RegisterOwnerResult>;
   logout: () => void;
 }
 
@@ -60,14 +57,8 @@ export const useAuthStore = create<AuthState>((set) => ({
     }
     return Boolean(account);
   },
-  // Integration point untuk POST /register saat backend tersedia.
-  // Tidak ada fake success — backend belum tersedia, jadi selalu kembalikan error.
-  register: (request) => {
-    void request;
-    return {
-      ok: false,
-      error: 'Backend belum tersedia. Registrasi belum dapat diproses.',
-    };
-  },
+  // Integration point untuk POST /auth/register. Sukses hanya berarti akun
+  // dibuat — backend tidak mengembalikan token, jadi tidak ada auto-login.
+  register: (request) => registerOwner(request),
   logout: () => set({ isAuthenticated: false, user: null }),
 }));
