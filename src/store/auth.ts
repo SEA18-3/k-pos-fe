@@ -4,9 +4,9 @@ export type UserRole = 'ADMIN' | 'OWNER' | 'OPERATOR' | 'ENTRY';
 
 // Kredensial demo mock — ganti dengan panggilan API /login saat backend tersedia
 export const DEMO_CREDENTIALS = {
-  email: 'admin@k-pos.com',
-  password: 'admin123',
-  name: 'Administrator',
+  email: 'op@k-pos.com',
+  password: 'op123',
+  name: 'Smooth Operator',
   role: 'OPERATOR' as UserRole,
 };
 
