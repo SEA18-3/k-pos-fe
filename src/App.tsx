@@ -1,6 +1,7 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
 import type { ReactElement } from 'react';
 import { Login } from './pages/Login';
+import { OwnerRegistrationPage } from './pages/OwnerRegistrationPage';
 import { TransactionPage } from './pages/TransactionPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { TransactionDetailPage } from './pages/TransactionDetailPage';
@@ -32,6 +33,10 @@ function App() {
       <Route
         path="/login"
         element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
+      />
+      <Route
+        path="/register"
+        element={isAuthenticated ? <Navigate to="/" replace /> : <OwnerRegistrationPage />}
       />
       <Route
         path="/"

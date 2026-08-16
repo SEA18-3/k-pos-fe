@@ -7,10 +7,20 @@ export const DEMO_CREDENTIALS = {
   name: 'Administrator',
 };
 
+export interface RegisterOwnerRequest {
+  name: string;
+  email: string;
+  password: string;
+  merchantName: string;
+}
+
+export type RegisterOwnerResult = { ok: true } | { ok: false; error: string };
+
 interface AuthState {
   isAuthenticated: boolean;
   user: { name: string; email: string } | null;
   login: (email: string, password: string) => boolean;
+  register: (request: RegisterOwnerRequest) => RegisterOwnerResult;
   logout: () => void;
 }
 
@@ -28,6 +38,15 @@ export const useAuthStore = create<AuthState>((set) => ({
       });
     }
     return isValid;
+  },
+  // Integration point untuk POST /register saat backend tersedia.
+  // Tidak ada fake success — backend belum tersedia, jadi selalu kembalikan error.
+  register: (request) => {
+    void request;
+    return {
+      ok: false,
+      error: 'Backend belum tersedia. Registrasi belum dapat diproses.',
+    };
   },
   logout: () => set({ isAuthenticated: false, user: null }),
 }));

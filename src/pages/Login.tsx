@@ -1,5 +1,5 @@
 import React, { useState } from 'react';
-import { useNavigate } from 'react-router-dom';
+import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 import { useAuthStore } from '../store/auth';
 import logo from '/logo.png'
@@ -140,6 +140,16 @@ export const Login: React.FC = () => {
             <LogIn className="w-4 h-4" />
             MASUK
           </button>
+
+          <p className="text-sm text-gray-500 font-medium text-center">
+            Belum punya akun?{' '}
+            <Link
+              to="/register"
+              className="font-bold text-brand-blue hover:text-red-600 focus:outline-none focus:ring-2 focus:ring-brand-blue rounded"
+            >
+              Daftar
+            </Link>
+          </p>
         </form>
       </div>
     </div>
