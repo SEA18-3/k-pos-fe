@@ -1,30 +1,19 @@
 import { Navigate, Route, Routes } from 'react-router-dom';
-import type { ReactElement } from 'react';
 import { Login } from './pages/Login';
 import { OwnerRegistrationPage } from './pages/OwnerRegistrationPage';
 import { TransactionPage } from './pages/TransactionPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { TransactionDetailPage } from './pages/TransactionDetailPage';
 import { ReportsPage } from './pages/ReportsPage';
+import { OperatorsPage } from './pages/OperatorsPage';
+import { AccessDeniedPage } from './pages/AccessDeniedPage';
+import { RequireRole } from './components/RequireRole';
 import { useAuthStore } from './store/auth';
+import { getDefaultRoute } from './utils/auth';
 import { useNetworkListener } from './store/connection';
 
-interface RequireAuthProps {
-  children: ReactElement;
-}
-
-const RequireAuth: React.FC<RequireAuthProps> = ({ children }) => {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
-
-  if (!isAuthenticated) {
-    return <Navigate to="/login" replace />;
-  }
-
-  return children;
-};
-
 function App() {
-  const isAuthenticated = useAuthStore((state) => state.isAuthenticated);
+  const user = useAuthStore((state) => state.user);
 
   useNetworkListener();
 
@@ -32,44 +21,53 @@ function App() {
     <Routes>
       <Route
         path="/login"
-        element={isAuthenticated ? <Navigate to="/" replace /> : <Login />}
+        element={user ? <Navigate to={getDefaultRoute(user.role)} replace /> : <Login />}
       />
       <Route
         path="/register"
-        element={isAuthenticated ? <Navigate to="/" replace /> : <OwnerRegistrationPage />}
+        element={user ? <Navigate to={getDefaultRoute(user.role)} replace /> : <OwnerRegistrationPage />}
       />
       <Route
         path="/"
         element={
-          <RequireAuth>
+          <RequireRole roles={['OPERATOR']}>
             <TransactionPage />
-          </RequireAuth>
+          </RequireRole>
         }
       />
       <Route
         path="/history"
         element={
-          <RequireAuth>
+          <RequireRole roles={['OWNER', 'OPERATOR']}>
             <HistoryPage />
-          </RequireAuth>
+          </RequireRole>
         }
       />
       <Route
         path="/history/:transactionId"
         element={
-          <RequireAuth>
+          <RequireRole roles={['OWNER', 'OPERATOR']}>
             <TransactionDetailPage />
-          </RequireAuth>
+          </RequireRole>
         }
       />
       <Route
         path="/reports"
         element={
-          <RequireAuth>
+          <RequireRole roles={['OWNER']}>
             <ReportsPage />
-          </RequireAuth>
+          </RequireRole>
         }
       />
+      <Route
+        path="/operators"
+        element={
+          <RequireRole roles={['OWNER']}>
+            <OperatorsPage />
+          </RequireRole>
+        }
+      />
+      <Route path="/access-denied" element={<AccessDeniedPage />} />
       <Route path="*" element={<Navigate to="/" replace />} />
     </Routes>
   );

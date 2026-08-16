@@ -1,14 +1,27 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
-import { Menu, X, ShoppingCart, History, BarChart3 } from 'lucide-react';
+import { Menu, X, ShoppingCart, History, BarChart3, Users } from 'lucide-react';
 import { ConnectionStatus } from './ConnectionStatus';
+import { useAuthStore, type UserRole } from '../store/auth';
+
+const NAV_ITEMS: { to: string; label: string; icon: typeof ShoppingCart; roles: UserRole[] }[] = [
+  { to: '/', label: 'Transaction', icon: ShoppingCart, roles: ['OPERATOR'] },
+  { to: '/history', label: 'History', icon: History, roles: ['OWNER', 'OPERATOR'] },
+  { to: '/reports', label: 'Reports', icon: BarChart3, roles: ['OWNER'] },
+  { to: '/operators', label: 'Operators', icon: Users, roles: ['OWNER'] },
+];
 
 export const Header: React.FC = () => {
   const [isNavOpen, setIsNavOpen] = useState(false);
+  const user = useAuthStore((state) => state.user);
 
   const toggleNav = () => {
     setIsNavOpen((prev) => !prev);
   };
+
+  const visibleItems = NAV_ITEMS.filter(
+    (item) => user && item.roles.includes(user.role)
+  );
 
   return (
     <>
@@ -59,32 +72,17 @@ export const Header: React.FC = () => {
 
         {/* Navigation Menu */}
         <nav className="flex-1 py-4 px-3 space-y-1">
-          <Link
-            to="/"
-            onClick={() => setIsNavOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-white/10 active:bg-white/20 transition-colors font-medium"
-          >
-            <ShoppingCart className="w-5 h-5" />
-            <span>Transaction</span>
-          </Link>
-
-          <Link
-            to="/history"
-            onClick={() => setIsNavOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-white/10 active:bg-white/20 transition-colors font-medium"
-          >
-            <History className="w-5 h-5" />
-            <span>History</span>
-          </Link>
-
-          <Link
-            to="/reports"
-            onClick={() => setIsNavOpen(false)}
-            className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-white/10 active:bg-white/20 transition-colors font-medium"
-          >
-            <BarChart3 className="w-5 h-5" />
-            <span>Reports</span>
-          </Link>
+          {visibleItems.map((item) => (
+            <Link
+              key={item.to}
+              to={item.to}
+              onClick={() => setIsNavOpen(false)}
+              className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-white/10 active:bg-white/20 transition-colors font-medium"
+            >
+              <item.icon className="w-5 h-5" />
+              <span>{item.label}</span>
+            </Link>
+          ))}
         </nav>
       </aside>
     </>
