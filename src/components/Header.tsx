@@ -77,14 +77,14 @@ export const Header: React.FC = () => {
             <span>History</span>
           </Link>
 
-          <a
-            href="#reports"
+          <Link
+            to="/reports"
             onClick={() => setIsNavOpen(false)}
             className="flex items-center gap-3 px-4 py-3 rounded-md hover:bg-white/10 active:bg-white/20 transition-colors font-medium"
           >
             <BarChart3 className="w-5 h-5" />
             <span>Reports</span>
-          </a>
+          </Link>
         </nav>
       </aside>
     </>

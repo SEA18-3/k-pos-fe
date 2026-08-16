@@ -4,6 +4,7 @@ import { Login } from './pages/Login';
 import { TransactionPage } from './pages/TransactionPage';
 import { HistoryPage } from './pages/HistoryPage';
 import { TransactionDetailPage } from './pages/TransactionDetailPage';
+import { ReportsPage } from './pages/ReportsPage';
 import { useAuthStore } from './store/auth';
 import { useNetworkListener } from './store/connection';
 
@@ -53,6 +54,14 @@ function App() {
         element={
           <RequireAuth>
             <TransactionDetailPage />
+          </RequireAuth>
+        }
+      />
+      <Route
+        path="/reports"
+        element={
+          <RequireAuth>
+            <ReportsPage />
           </RequireAuth>
         }
       />
