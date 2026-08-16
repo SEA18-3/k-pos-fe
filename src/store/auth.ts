@@ -1,73 +1,84 @@
 import { create } from 'zustand';
+import {
+  login as loginRequest,
+  logout as logoutRequest,
+  registerOwner,
+  type AuthUser,
+  type LoginResult,
+  type RegisterOwnerRequest,
+  type RegisterOwnerResult,
+} from '../api/auth';
+import {
+  clearAuthSession,
+  loadAuthSession,
+  saveAuthSession,
+} from '../utils/session';
 
-export type UserRole = 'ADMIN' | 'OWNER' | 'OPERATOR' | 'ENTRY';
-
-// Kredensial demo mock — ganti dengan panggilan API /login saat backend tersedia
-export const DEMO_CREDENTIALS = {
-  email: 'op@k-pos.com',
-  password: 'op123',
-  name: 'Smooth Operator',
-  role: 'OPERATOR' as UserRole,
-};
-
-// Mock OWNER — development/testing hanya. Bukan hasil dari /register (register
-// selalu gagal sampai backend tersedia), jadi role OWNER hanya berasal dari akun
-// mock ini untuk keperluan uji coba role-based UI.
-export const MOCK_OWNER = {
-  email: 'owner@k-pos.com',
-  password: 'owner123',
-  name: 'Owner Demo',
-  role: 'OWNER' as UserRole,
-};
-
-export interface RegisterOwnerRequest {
-  name: string;
-  email: string;
-  password: string;
-  merchantName: string;
-}
-
-export type RegisterOwnerResult = { ok: true } | { ok: false; error: string };
-
-export interface AuthUser {
-  name: string;
-  email: string;
-  role: UserRole;
-}
+export type {
+  AuthUser,
+  LoginRequest,
+  LoginResult,
+  RegisterOwnerRequest,
+  RegisterOwnerResult,
+  UserRole,
+} from '../api/auth';
 
 interface AuthState {
   isAuthenticated: boolean;
   user: AuthUser | null;
-  login: (email: string, password: string) => boolean;
-  register: (request: RegisterOwnerRequest) => RegisterOwnerResult;
+  accessToken: string | null;
+  refreshToken: string | null;
+  login: (email: string, password: string) => Promise<LoginResult>;
+  register: (request: RegisterOwnerRequest) => Promise<RegisterOwnerResult>;
   logout: () => void;
 }
 
+// Bootstrap: restore session secara sinkron dari localStorage supaya
+// session survive browser refresh dan tersedia pada render pertama.
+const initialSession = loadAuthSession();
+
 export const useAuthStore = create<AuthState>((set) => ({
-  isAuthenticated: false,
-  user: null,
-  login: (email, password) => {
-    const account = [DEMO_CREDENTIALS, MOCK_OWNER].find(
-      (cred) =>
-        email.trim().toLowerCase() === cred.email &&
-        password === cred.password
-    );
-    if (account) {
-      set({
-        isAuthenticated: true,
-        user: { name: account.name, email: account.email, role: account.role },
-      });
+  isAuthenticated: Boolean(initialSession),
+  user: initialSession?.user ?? null,
+  accessToken: initialSession?.accessToken ?? null,
+  refreshToken: initialSession?.refreshToken ?? null,
+  // Login nyata ke POST /api/v1/auth/login. Tidak ada mock credentials.
+  // Failure tidak mengubah session yang sedang aktif.
+  login: async (email, password) => {
+    const result = await loginRequest({ email, password });
+    if (!result.ok) {
+      return result;
     }
-    return Boolean(account);
-  },
-  // Integration point untuk POST /register saat backend tersedia.
-  // Tidak ada fake success — backend belum tersedia, jadi selalu kembalikan error.
-  register: (request) => {
-    void request;
-    return {
-      ok: false,
-      error: 'Backend belum tersedia. Registrasi belum dapat diproses.',
+    const session = {
+      user: result.user,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
     };
+    saveAuthSession(session);
+    set({
+      isAuthenticated: true,
+      user: result.user,
+      accessToken: result.accessToken,
+      refreshToken: result.refreshToken,
+    });
+    return result;
   },
-  logout: () => set({ isAuthenticated: false, user: null }),
+  // Integration point untuk POST /auth/register. Sukses hanya berarti akun
+  // dibuat — backend tidak mengembalikan token, jadi tidak ada auto-login.
+  register: (request) => registerOwner(request),
+  // Clear session lokal secara sinkron lebih dulu supaya routing langsung
+  // bereaksi (tanpa redirect loop), baru panggil API logout (best-effort).
+  logout: () => {
+    const refreshToken = useAuthStore.getState().refreshToken;
+    set({
+      isAuthenticated: false,
+      user: null,
+      accessToken: null,
+      refreshToken: null,
+    });
+    clearAuthSession();
+    if (refreshToken) {
+      void logoutRequest(refreshToken);
+    }
+  },
 }));

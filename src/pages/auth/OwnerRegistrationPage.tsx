@@ -1,5 +1,5 @@
-import React, { useState } from 'react';
-import { Link } from 'react-router-dom';
+import React, { useEffect, useRef, useState } from 'react';
+import { Link, useNavigate } from 'react-router-dom';
 import { User, Mail, Lock, Store, Eye, EyeOff, UserPlus } from 'lucide-react';
 import { useAuthStore } from '../../store/auth';
 import logo from '/logo.png';
@@ -26,6 +26,7 @@ const EYE_TOGGLE_CLASS =
 
 export const OwnerRegistrationPage: React.FC = () => {
   const register = useAuthStore((state) => state.register);
+  const navigate = useNavigate();
 
   const [name, setName] = useState('');
   const [email, setEmail] = useState('');
@@ -35,13 +36,27 @@ export const OwnerRegistrationPage: React.FC = () => {
   const [showPassword, setShowPassword] = useState(false);
   const [showConfirmPassword, setShowConfirmPassword] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [submitting, setSubmitting] = useState(false);
+  const [registered, setRegistered] = useState(false);
+  const redirectTimerRef = useRef<ReturnType<typeof setTimeout> | null>(null);
+
+  // Bersihkan timer redirect jika halaman ditinggalkan sebelum redirect jalan.
+  useEffect(() => {
+    return () => {
+      if (redirectTimerRef.current) {
+        clearTimeout(redirectTimerRef.current);
+      }
+    };
+  }, []);
 
   const clearFieldError = (field: keyof FormErrors) => {
     setErrors((prev) => ({ ...prev, [field]: undefined, form: undefined }));
   };
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
+
     const newErrors: FormErrors = {};
 
     if (!name.trim()) {
@@ -71,16 +86,26 @@ export const OwnerRegistrationPage: React.FC = () => {
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
-    const result = register({
+    setSubmitting(true);
+    const result = await register({
       name: name.trim(),
       email: email.trim(),
       password,
       merchantName: merchantName.trim(),
     });
+    setSubmitting(false);
 
     if (!result.ok) {
       setErrors({ form: result.error });
+      return;
     }
+
+    // Akun berhasil dibuat. Backend tidak memberikan session, jadi user harus
+    // login eksplisit — arahkan ke /login (replace agar /register tidak kembali).
+    setRegistered(true);
+    redirectTimerRef.current = setTimeout(() => {
+      navigate('/login', { replace: true });
+    }, 1500);
   };
 
   return (
@@ -104,6 +129,15 @@ export const OwnerRegistrationPage: React.FC = () => {
             </div>
 
             <form onSubmit={handleSubmit} noValidate className="flex flex-col gap-5">
+              {registered && (
+                <div
+                  role="status"
+                  className="bg-emerald-50 border border-emerald-200 text-emerald-700 text-sm font-medium px-4 py-3 rounded"
+                >
+                  Akun berhasil dibuat. Silakan masuk dengan akun baru Anda.
+                </div>
+              )}
+
               {errors.form && (
                 <div
                   role="alert"
@@ -305,10 +339,11 @@ export const OwnerRegistrationPage: React.FC = () => {
 
               <button
                 type="submit"
-                className="mt-1 w-full py-3 bg-brand-blue hover:bg-brand-blue-hover active:scale-[0.98] text-white text-sm font-bold tracking-widest rounded shadow-sm hover:shadow-md transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-blue flex items-center justify-center gap-2"
+                disabled={submitting}
+                className="mt-1 w-full py-3 bg-brand-blue hover:bg-brand-blue-hover active:scale-[0.98] text-white text-sm font-bold tracking-widest rounded shadow-sm hover:shadow-md transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-blue flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
               >
                 <UserPlus aria-hidden="true" className="w-4 h-4" />
-                DAFTAR
+                {submitting ? 'MENGIRIM...' : 'DAFTAR'}
               </button>
 
               <p className="text-sm text-gray-500 font-medium text-center">

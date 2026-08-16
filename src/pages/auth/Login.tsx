@@ -2,6 +2,7 @@ import React, { useState } from 'react';
 import { Link, useNavigate } from 'react-router-dom';
 import { Mail, Lock, Eye, EyeOff, LogIn } from 'lucide-react';
 import { useAuthStore } from '../../store/auth';
+import { getDefaultRoute } from '../../utils/auth';
 import logo from '/logo.png'
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
@@ -20,9 +21,12 @@ export const Login: React.FC = () => {
   const [password, setPassword] = useState('');
   const [showPassword, setShowPassword] = useState(false);
   const [errors, setErrors] = useState<FormErrors>({});
+  const [submitting, setSubmitting] = useState(false);
 
-  const handleSubmit = (e: React.FormEvent) => {
+  const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
+    if (submitting) return;
+
     const newErrors: FormErrors = {};
 
     if (!email.trim()) {
@@ -38,13 +42,17 @@ export const Login: React.FC = () => {
     setErrors(newErrors);
     if (Object.keys(newErrors).length > 0) return;
 
-    const success = login(email.trim(), password);
-    if (!success) {
-      setErrors({ form: 'Email atau password salah' });
+    setSubmitting(true);
+    const result = await login(email.trim(), password);
+    setSubmitting(false);
+
+    if (!result.ok) {
+      setErrors({ form: result.error });
       return;
     }
 
-    navigate('/', { replace: true });
+    // Rute tujuan ditentukan role dari response backend — bukan dari email.
+    navigate(getDefaultRoute(result.user.role), { replace: true });
   };
 
   return (
@@ -64,7 +72,10 @@ export const Login: React.FC = () => {
         {/* Form */}
         <form onSubmit={handleSubmit} noValidate className="p-8 flex flex-col gap-5">
           {errors.form && (
-            <div className="bg-red-50 border border-red-200 text-red-700 text-sm font-medium px-4 py-3 rounded">
+            <div
+              role="alert"
+              className="bg-red-50 border border-red-200 text-red-700 text-sm font-medium px-4 py-3 rounded"
+            >
               {errors.form}
             </div>
           )}
@@ -135,10 +146,11 @@ export const Login: React.FC = () => {
 
           <button
             type="submit"
-            className="mt-1 w-full py-3 bg-brand-blue hover:bg-brand-blue-hover active:scale-[0.98] text-white text-sm font-bold tracking-widest rounded shadow-sm hover:shadow-md transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-blue flex items-center justify-center gap-2"
+            disabled={submitting}
+            className="mt-1 w-full py-3 bg-brand-blue hover:bg-brand-blue-hover active:scale-[0.98] text-white text-sm font-bold tracking-widest rounded shadow-sm hover:shadow-md transition-all cursor-pointer focus:outline-none focus:ring-2 focus:ring-brand-blue flex items-center justify-center gap-2 disabled:opacity-60 disabled:cursor-not-allowed"
           >
             <LogIn className="w-4 h-4" />
-            MASUK
+            {submitting ? 'MENGIRIM...' : 'MASUK'}
           </button>
 
           <p className="text-sm text-gray-500 font-medium text-center">
