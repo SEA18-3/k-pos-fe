@@ -1,12 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, ReceiptText } from 'lucide-react';
-import { Header } from '../components/Header';
-import { StatusBadge } from '../components/StatusBadge';
-import { useConnectionStore } from '../store/connection';
-import { useTransactionStore } from '../store/transactions';
-import { formatDateTime, formatIDR } from '../utils/format';
-import { summarizeSync, summarizeToday } from '../utils/reports';
+import { Header } from '../../components/Header';
+import { StatusBadge } from '../../components/StatusBadge';
+import { useConnectionStore } from '../../store/connection';
+import { useTransactionStore } from '../../store/transactions';
+import { formatDateTime, formatIDR } from '../../utils/format';
+import { summarizeSync, summarizeToday } from '../../utils/reports';
 
 const NETWORK_META: Record<string, { label: string; dot: string }> = {
   online: { label: 'Online', dot: 'bg-emerald-500' },

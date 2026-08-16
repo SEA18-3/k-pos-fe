@@ -1,12 +1,12 @@
 import { useState } from 'react';
-import { Header } from '../components/Header';
-import { ProductCatalog } from '../components/ProductCatalog';
-import { Cart } from '../components/Cart';
-import { SuccessModal } from '../components/SuccessModal';
-import { PRODUCTS } from '../store/items';
-import { useCartStore } from '../store/cart';
-import { useTransactionStore } from '../store/transactions';
-import type { Transaction } from '../types';
+import { Header } from '../../components/Header';
+import { ProductCatalog } from '../../components/ProductCatalog';
+import { Cart } from '../../components/Cart';
+import { SuccessModal } from '../../components/SuccessModal';
+import { PRODUCTS } from '../../store/items';
+import { useCartStore } from '../../store/cart';
+import { useTransactionStore } from '../../store/transactions';
+import type { Transaction } from '../../types';
 
 export const TransactionPage = () => {
   const items = useCartStore((state) => state.items);

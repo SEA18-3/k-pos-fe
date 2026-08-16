@@ -1,7 +1,7 @@
 import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import { User, Mail, Lock, Store, Eye, EyeOff, UserPlus } from 'lucide-react';
-import { useAuthStore } from '../store/auth';
+import { useAuthStore } from '../../store/auth';
 import logo from '/logo.png';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;

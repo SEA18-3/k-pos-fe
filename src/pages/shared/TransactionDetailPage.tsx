@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link, useParams } from 'react-router-dom';
 import { ArrowLeft, SearchX } from 'lucide-react';
-import { Header } from '../components/Header';
-import { StatusBadge } from '../components/StatusBadge';
-import { useTransactionStore } from '../store/transactions';
-import { formatIDR, formatDateTime } from '../utils/format';
+import { Header } from '../../components/Header';
+import { StatusBadge } from '../../components/StatusBadge';
+import { useTransactionStore } from '../../store/transactions';
+import { formatIDR, formatDateTime } from '../../utils/format';
 
 export const TransactionDetailPage: React.FC = () => {
   const { transactionId } = useParams<{ transactionId: string }>();

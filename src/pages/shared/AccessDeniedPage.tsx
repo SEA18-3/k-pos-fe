@@ -1,7 +1,7 @@
 import React from 'react';
 import { useNavigate } from 'react-router-dom';
 import { ShieldX } from 'lucide-react';
-import { useAuthStore } from '../store/auth';
+import { useAuthStore } from '../../store/auth';
 
 // Terminal page untuk role yang belum memiliki permission UI (ADMIN/ENTRY).
 // Memutus redirect loop: tidak ada menu navigasi di sini, hanya tombol logout.

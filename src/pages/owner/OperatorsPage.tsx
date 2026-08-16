@@ -1,12 +1,12 @@
 import React, { useEffect, useRef, useState } from 'react';
 import { Link } from 'react-router-dom';
 import { ArrowLeft, Users, UserPlus, X, User, Mail, Lock, Eye, EyeOff } from 'lucide-react';
-import { Header } from '../components/Header';
-import { formatDateTime } from '../utils/format';
+import { Header } from '../../components/Header';
+import { formatDateTime } from '../../utils/format';
 import {
   useOperatorStore,
   type Operator,
-} from '../store/operators';
+} from '../../store/operators';
 
 const EMAIL_REGEX = /^[^\s@]+@[^\s@]+\.[^\s@]+$/;
 

@@ -1,10 +1,10 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import { ReceiptText, ArrowLeft } from 'lucide-react';
-import { Header } from '../components/Header';
-import { StatusBadge } from '../components/StatusBadge';
-import { useTransactionStore } from '../store/transactions';
-import { formatIDR, formatDateTime } from '../utils/format';
+import { Header } from '../../components/Header';
+import { StatusBadge } from '../../components/StatusBadge';
+import { useTransactionStore } from '../../store/transactions';
+import { formatIDR, formatDateTime } from '../../utils/format';
 
 export const HistoryPage: React.FC = () => {
   const transactions = useTransactionStore((state) => state.transactions);
