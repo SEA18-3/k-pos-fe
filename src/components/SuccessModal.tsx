@@ -1,34 +1,24 @@
 import React from 'react';
-import type { CartItem } from '../types';
+import type { Transaction } from '../types';
+import { formatIDR, formatDateTime } from '../utils/format';
+import { StatusBadge } from './StatusBadge';
 
 interface SuccessModalProps {
-  isOpen: boolean;
-  cart: CartItem[];
-  invoiceNumber: string;
-  dateStr: string;
+  transaction: Transaction | null;
   onClose: () => void;
 }
 
 export const SuccessModal: React.FC<SuccessModalProps> = ({
-  isOpen,
-  cart,
-  invoiceNumber,
-  dateStr,
+  transaction,
   onClose,
 }) => {
-  if (!isOpen) return null;
-
-  const subtotal = cart.reduce(
-    (sum, item) => sum + item.product.price * item.quantity,
-    0
-  );
-  const total = subtotal;
+  if (!transaction) return null;
 
   return (
     <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4 select-none">
       {/* Modal Container */}
       <div className="bg-white rounded-lg shadow-2xl w-full max-w-md overflow-hidden animate-[scaleIn_0.3s_ease-out] flex flex-col">
-        
+
         {/* Success Header Banner */}
         <div className="bg-emerald-600 p-6 text-center text-white flex flex-col items-center gap-2">
           {/* Animated Checkmark Icon */}
@@ -53,15 +43,14 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
         {/* Invoice Summary Content */}
         <div className="p-6 flex-1 flex flex-col gap-4 overflow-y-auto max-h-[350px]">
           {/* Meta Info */}
-          <div className="flex justify-between items-center text-xs text-gray-500 border-b border-gray-100 pb-3 font-medium">
+          <div className="flex justify-between items-start text-xs text-gray-500 border-b border-gray-100 pb-3 font-medium">
             <div>
-              <p className="font-bold text-gray-800">Invoice: {invoiceNumber}</p>
-              <p className="mt-0.5">{dateStr}</p>
+              <p className="font-bold text-gray-800">Invoice: {transaction.invoiceNumber}</p>
+              <p className="mt-0.5">{formatDateTime(transaction.createdAt)}</p>
             </div>
-            <div className="text-right">
-              <span className="bg-emerald-50 text-emerald-700 border border-emerald-200 px-2 py-0.5 rounded text-[10px] font-bold">
-                PAID
-              </span>
+            <div className="text-right flex flex-col items-end gap-1">
+              <StatusBadge type="transaction" status={transaction.transactionStatus} />
+              <StatusBadge type="sync" status={transaction.syncStatus} />
             </div>
           </div>
 
@@ -71,7 +60,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
               Receipt Details
             </h3>
             <div className="flex flex-col gap-2.5 divide-y divide-gray-50 max-h-[180px] overflow-y-auto pr-1">
-              {cart.map((item) => (
+              {transaction.items.map((item) => (
                 <div
                   key={item.product.id}
                   className="flex justify-between items-start text-xs pt-2.5 first:pt-0"
@@ -85,7 +74,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
                     </span>
                   </div>
                   <span className="font-bold text-gray-900">
-                    ${(item.product.price * item.quantity).toFixed(2)}
+                    {formatIDR(item.product.price * item.quantity)}
                   </span>
                 </div>
               ))}
@@ -96,7 +85,7 @@ export const SuccessModal: React.FC<SuccessModalProps> = ({
           <div className="border-t border-gray-150 pt-3 flex flex-col gap-2 text-xs">
             <div className="flex justify-between items-center text-sm font-black text-gray-900 border-t border-dashed border-gray-200 pt-2.5 mt-1">
               <span className="tracking-wide">TOTAL PAID</span>
-              <span className="text-lg text-emerald-600">${total.toFixed(2)}</span>
+              <span className="text-lg text-emerald-600">{formatIDR(transaction.total)}</span>
             </div>
           </div>
         </div>
